@@ -18,7 +18,7 @@ The acronym of ECS stands for 3 things
   * Entities
   * Components
   * Systems
-  * 
+
 This project has entities(GameObjects) and Components, but does not contain systems. In a pure ECS the components themselves are data only and do not have logic. Additionaly ECS systems store all components together for rapid processing. This system stores the components on each entity to allow simple heirarchical trees.
 
 ## Example ECS
