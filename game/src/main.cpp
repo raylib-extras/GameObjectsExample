@@ -5,14 +5,14 @@ Use this as a starting point or replace it with your code.
 
 -- Copyright (c) 2020-2024 Jeffery Myers
 --
---This software is provided "as-is", without any express or implied warranty. In no event 
+--This software is provided "as-is", without any express or implied warranty. In no event
 --will the authors be held liable for any damages arising from the use of this software.
 
---Permission is granted to anyone to use this software for any purpose, including commercial 
+--Permission is granted to anyone to use this software for any purpose, including commercial
 --applications, and to alter it and redistribute it freely, subject to the following restrictions:
 
---  1. The origin of this software must not be misrepresented; you must not claim that you 
---  wrote the original software. If you use this software in a product, an acknowledgment 
+--  1. The origin of this software must not be misrepresented; you must not claim that you
+--  wrote the original software. If you use this software in a product, an acknowledgment
 --  in the product documentation would be appreciated but is not required.
 --
 --  2. Altered source versions must be plainly marked as such, and must not be misrepresented
@@ -39,19 +39,19 @@ Texture Wabbit = { 0 };
 class PlayerController : public GameObjectBehavior
 {
 public:
-	DEFINE_BEHAVIOR(PlayerController)
+    DEFINE_BEHAVIOR(PlayerController)
 
-	float Speed = 300;
+        float Speed = 300;
 
-	void OnUpdate() override
-	{
-		TransformComponent* transform = GetComponent<TransformComponent>();
-		if (!transform)
-			return;
+    void OnUpdate() override
+    {
+        TransformComponent* transform = GetComponent<TransformComponent>();
+        if (!transform)
+            return;
 
-		Vector2 movement = { 0 };
-		if (IsKeyDown(KEY_W))
-			movement.y -= 1;
+        Vector2 movement = { 0 };
+        if (IsKeyDown(KEY_W))
+            movement.y -= 1;
         if (IsKeyDown(KEY_S))
             movement.y += 1;
 
@@ -60,46 +60,46 @@ public:
         if (IsKeyDown(KEY_D))
             movement.x += 1;
 
-		transform->SetPosition(Vector2Add(transform->GetPosition(), Vector2Scale(movement, Speed * GetFrameTime())));
-	}
+        transform->SetPosition(Vector2Add(transform->GetPosition(), Vector2Scale(movement, Speed * GetFrameTime())));
+    }
 };
 
 void SetupScene()
 {
-	auto* player = TestScene.AddObject();
-	player->AddComponent<TransformComponent>()->SetPosition(Vector2{ 200, 200 });
-	player->AddComponent<PlayerController>();
-	player->AddComponent<SpriteComponent>()->SetSprite(Wabbit);
+    auto* player = TestScene.AddObject();
+    player->AddComponent<TransformComponent>()->SetPosition(Vector2{ 200, 200 });
+    player->AddComponent<PlayerController>();
+    player->AddComponent<SpriteComponent>()->SetSprite(Wabbit);
 }
 
 void LoadResources()
 {
-	Wabbit = LoadTexture("resources/wabbit_alpha.png");
+    Wabbit = LoadTexture("resources/wabbit_alpha.png");
 }
 
-int main ()
+int main()
 {
-	// set up the window
-	InitWindow(1280, 800, "Game Object Test");
+    // set up the window
+    InitWindow(1280, 800, "Game Object Test");
 
-	LoadResources();
-	SetupScene();
-	
-	// game loop
-	while (!WindowShouldClose())
-	{
-		// drawing
-		TestScene.Update();
+    LoadResources();
+    SetupScene();
 
-		BeginDrawing();
-		ClearBackground(TestScene.Background);
+    // game loop
+    while (!WindowShouldClose())
+    {
+        // drawing
+        TestScene.Update();
 
-		TestScene.Render();
+        BeginDrawing();
+        ClearBackground(TestScene.Background);
 
-		EndDrawing();
-	}
+        TestScene.Render();
 
-	// cleanup
-	CloseWindow();
-	return 0;
+        EndDrawing();
+    }
+
+    // cleanup
+    CloseWindow();
+    return 0;
 }
