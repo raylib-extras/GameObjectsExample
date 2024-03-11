@@ -33,6 +33,8 @@ Use this as a starting point or replace it with your code.
 Scene TestScene;
 
 Texture Wabbit = { 0 };
+Texture Logo = { 0 };
+Texture Sprite = { 0 };
 
 
 // a simple behavior class that handles input
@@ -64,17 +66,51 @@ public:
     }
 };
 
+class Spiner : public GameObjectBehavior
+{
+public:
+    DEFINE_BEHAVIOR(Spiner)
+
+    float Speed = 180;
+
+    void OnUpdate() override
+    {
+        TransformComponent* transform = GetComponent<TransformComponent>();
+        if (!transform)
+            return;
+
+        transform->SetRotation(transform->GetRotation() + Speed * GetFrameTime());
+        Vector2 movement = { 0 };
+    }
+};
+
 void SetupScene()
 {
     auto* player = TestScene.AddObject();
-    player->AddComponent<TransformComponent>()->SetPosition(Vector2{ 200, 200 });
+    player->AddComponent<TransformComponent>()->SetPosition(Vector2{ 100, 100 });
     player->AddComponent<PlayerController>();
     player->AddComponent<SpriteComponent>()->SetSprite(Wabbit);
+
+    auto* logo = TestScene.AddObject();
+    logo->AddComponent<TransformComponent>()->SetPosition(Vector2{ GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f });
+    auto* sprite = logo->AddComponent<SpriteComponent>();
+    sprite->SetSprite(Logo);
+    sprite->SetScale(0.5f);
+
+    auto* spinner = logo->AddChild();
+    spinner->AddComponent<TransformComponent>();
+    spinner->AddComponent<Spiner>();
+
+    auto* orbit = spinner->AddChild();
+    orbit->AddComponent<TransformComponent>()->SetPosition(Vector2{ 0, 200 });
+    orbit->AddComponent<SpriteComponent>()->SetSprite(Wabbit);
 }
 
 void LoadResources()
 {
     Wabbit = LoadTexture("resources/wabbit_alpha.png");
+    Logo = LoadTexture("resources/raylib_logo.png");
+    Sprite = LoadTexture("resources/scarfy.png");
 }
 
 int main()

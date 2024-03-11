@@ -87,7 +87,9 @@ void SpriteComponent::OnRender()
     if (transform)
         transform->PushMatrix();
 
-    DrawTextureRec(Sprite, SourceRect, Vector2Zero(), Tint);
+    Rectangle destRect = { 0,0,Sprite.width * Scale,Sprite.height * Scale };
+
+    DrawTexturePro(Sprite, SourceRect, destRect, Vector2{ destRect.width *0.5f, destRect.height*0.5f}, 0, Tint);
 
     if (transform)
         transform->PopMatrix();
@@ -117,4 +119,14 @@ void SpriteComponent::SetTint(Color tint)
 Color SpriteComponent::GetTint() const
 {
     return Tint;
+}
+
+void SpriteComponent::SetScale(float scale)
+{
+    Scale = scale;
+}
+
+float SpriteComponent::GetScale() const
+{
+    return Scale;
 }

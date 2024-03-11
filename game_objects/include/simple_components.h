@@ -47,6 +47,7 @@ private:
     Texture2D Sprite = { 0 };
     Rectangle SourceRect = { 0,0,-1,-1 };
     Color Tint = WHITE;
+    float Scale = 1.0f;
 
 public:
     DEFINE_COMPONENT(SpriteComponent)
@@ -59,4 +60,7 @@ public:
 
     void SetTint(Color tint);
     Color GetTint() const;
+
+    void SetScale(float scale);
+    float GetScale() const;
 };
