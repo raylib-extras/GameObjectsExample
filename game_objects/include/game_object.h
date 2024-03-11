@@ -1,4 +1,3 @@
-// C library
 /*
 -- Copyright (c) 2020-2024 Jeffery Myers
 --
@@ -28,11 +27,6 @@
 class GameObject
 {
 private:
-    Component* AddComponent(std::unique_ptr<Component> component);
-    void RemoveComponent(size_t componentID);
-
-    Component* GetComponent(size_t componentID);
-
     GameObject* Parent = nullptr;
     std::vector<GameObject*> Children;
 
@@ -47,10 +41,14 @@ public:
     void Update();
     void Render();
 
+    Component* AddComponent(std::unique_ptr<Component> component);
+    void RemoveComponent(size_t componentID);
+    Component* GetComponent(size_t componentID);
+
     template<class T>
     T* AddComponent()
     {
-        return AddComponent(std::make_unique<T>(*this));
+        return static_cast<T*>(AddComponent(std::make_unique<T>(*this)));
     }
 
     template<class T>
@@ -62,10 +60,10 @@ public:
     template<class T>
     T* GetComponent()
     {
-        return GetComponent(T::GetComponentId());
+        return static_cast<T*>(GetComponent(T::GetComponentId()));
     }
 
-    const std::vector<GameObject> GetChildren() const { return Children; }
+    const std::vector<GameObject*>& GetChildren() const { return Children; }
     GameObject* GetParent() const { return Parent; }
 
     GameObject* AddChild();

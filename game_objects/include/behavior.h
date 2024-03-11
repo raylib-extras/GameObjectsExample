@@ -22,41 +22,15 @@
 #include "component.h"
 #include "raylib.h"
 
-class TransformComponent : public Component
+#define DEFINE_BEHAVIOR(T) \
+T(GameObject& object) : GameObjectBehavior(object){}
+
+class GameObjectBehavior : public Component
 {
-private:
-    Vector2 Translation = { 0 };
-    float Rotation = 0;
-
 public:
-    DEFINE_COMPONENT(TransformComponent)
+    static const char* GetComponentName() { return "GameObjectBehavior"; }
+    static size_t GetComponentId() { return reinterpret_cast<size_t>("GameObjectBehavior"); }
+    inline size_t GetTypeId() const override { return GetComponentId(); }
+    GameObjectBehavior(GameObject& object) : Component(object) {}
 
-    void SetPosition(const Vector2& pos);
-    Vector2 GetPosition() const;
-
-    void SetRotation(float rotation);
-    float GetRotation() const;
-
-    void PushMatrix();
-    void PopMatrix();
-};
-
-class SpriteComponent : public Component
-{
-private:
-    Texture2D Sprite = { 0 };
-    Rectangle SourceRect = { 0,0,-1,-1 };
-    Color Tint = WHITE;
-
-public:
-    DEFINE_COMPONENT(SpriteComponent)
-
-    void OnRender() override;
-
-    void SetSprite(const Texture2D& texture);
-    void SetSprite(const Texture2D& texture, const Rectangle& sourceRect);
-    void SetSpriteRect(const Rectangle& sourceRect);
-
-    void SetTint(Color tint);
-    Color GetTint() const;
 };

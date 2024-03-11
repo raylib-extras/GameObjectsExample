@@ -3,8 +3,6 @@ Raylib example file.
 This is an example main file for a simple raylib project.
 Use this as a starting point or replace it with your code.
 
-For a C++ project simply rename the file to .cpp and run premake 
-
 -- Copyright (c) 2020-2024 Jeffery Myers
 --
 --This software is provided "as-is", without any express or implied warranty. In no event 
@@ -25,21 +23,79 @@ For a C++ project simply rename the file to .cpp and run premake
 */
 
 #include "raylib.h"
+#include "raymath.h"
+
+#include "game_object.h"
+#include "simple_components.h"
+#include "behavior.h"
+#include "scene.h"
+
+Scene TestScene;
+
+Texture Wabbit = { 0 };
+
+
+// a simple behavior class that handles input
+class PlayerController : public GameObjectBehavior
+{
+public:
+	DEFINE_BEHAVIOR(PlayerController)
+
+	float Speed = 300;
+
+	void OnUpdate() override
+	{
+		TransformComponent* transform = GetComponent<TransformComponent>();
+		if (!transform)
+			return;
+
+		Vector2 movement = { 0 };
+		if (IsKeyDown(KEY_W))
+			movement.y -= 1;
+        if (IsKeyDown(KEY_S))
+            movement.y += 1;
+
+        if (IsKeyDown(KEY_A))
+            movement.x -= 1;
+        if (IsKeyDown(KEY_D))
+            movement.x += 1;
+
+		transform->SetPosition(Vector2Add(transform->GetPosition(), Vector2Scale(movement, Speed * GetFrameTime())));
+	}
+};
+
+void SetupScene()
+{
+	auto* player = TestScene.AddObject();
+	player->AddComponent<TransformComponent>()->SetPosition(Vector2{ 200, 200 });
+	player->AddComponent<PlayerController>();
+	player->AddComponent<SpriteComponent>()->SetSprite(Wabbit);
+}
+
+void LoadResources()
+{
+	Wabbit = LoadTexture("resources/wabbit_alpha.png");
+}
 
 int main ()
 {
 	// set up the window
-	InitWindow(1280, 800, "Hello Raylib");
+	InitWindow(1280, 800, "Game Object Test");
+
+	LoadResources();
+	SetupScene();
 	
 	// game loop
 	while (!WindowShouldClose())
 	{
 		// drawing
-		BeginDrawing();
-		ClearBackground(BLACK);
+		TestScene.Update();
 
-		DrawText("Hello Raylib", 200,200,20,WHITE);
-		
+		BeginDrawing();
+		ClearBackground(TestScene.Background);
+
+		TestScene.Render();
+
 		EndDrawing();
 	}
 
