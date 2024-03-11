@@ -5,7 +5,7 @@ Example of a basic game object system using components.
 A game object is an entity type class that can have children and a list of components. Game Objects are stored in a heiriachy.
 
 ## Components
-Components are generic classes that can be derived from an attached to entities. They get update and render calls each frame where they can perform work.
+Components are generic classes that can be derived from and attached to entities. They get update and render calls each frame where they can perform work.
 
 ## Scene
 A scene is a collection of top level game objects.
