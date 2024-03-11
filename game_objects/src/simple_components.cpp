@@ -87,7 +87,7 @@ void SpriteComponent::OnRender()
     if (transform)
         transform->PushMatrix();
 
-    Rectangle destRect = { 0,0,Sprite.width * Scale,Sprite.height * Scale };
+    Rectangle destRect = { 0, 0, fabsf(SourceRect.width * Scale), fabsf(SourceRect.height * Scale) };
 
     DrawTexturePro(Sprite, SourceRect, destRect, Vector2{ destRect.width *0.5f, destRect.height*0.5f}, 0, Tint);
 
@@ -129,4 +129,103 @@ void SpriteComponent::SetScale(float scale)
 float SpriteComponent::GetScale() const
 {
     return Scale;
+}
+
+//-----------------------AnimationSequence-------------------------//
+
+void AnimationSequence::FlipFrames(bool flipX, bool flipY)
+{
+    for (auto& rect : Frames)
+    {
+        if (flipX)
+            rect.width *= -1;
+        if (flipY)
+            rect.height *= -1;
+    }
+}
+
+void AnimationSequence::FromSpriteSheet(Texture2D& texture, int frameWidth, int frameHeight)
+{
+    Frames.clear();
+    for (int y = 0; y < texture.height; y += frameHeight)
+    {
+        for (int x = 0; x < texture.width; x += frameWidth)
+        {
+            Frames.emplace_back(Rectangle{ float(x), float(y), float(frameWidth), float(frameHeight) });
+        }
+    }
+}
+
+//-----------------------SpriteAnimationComponent-------------------------//
+
+void SpriteAnimationComponent::OnUpdate()
+{
+    auto itr = Sequences.find(CurrentSequence);
+    if (itr == Sequences.end())
+        return;
+
+    AnimationSequence& sequence = itr->second;
+
+    SpriteComponent* sprite = GetComponent<SpriteComponent>();
+    if (!sprite)
+        return;
+
+    LastFrameTime += GetFrameTime();
+
+    float fpsTime = 1.0f / sequence.FPS;
+
+    while (LastFrameTime >= fpsTime)
+    {
+        LastFrameTime -= fpsTime;
+        CurrentFrame++;
+
+        if (CurrentFrame >= sequence.Frames.size())
+        {
+            if (sequence.Loop)
+                CurrentFrame = 0;
+            else
+                CurrentFrame = sequence.Frames.size();
+        }
+    }
+
+    if (CurrentFrame < sequence.Frames.size())
+        sprite->SetSpriteRect(sequence.Frames[CurrentFrame]);
+}
+
+AnimationSequence& SpriteAnimationComponent::AddSequence(std::string_view name)
+{
+    if (CurrentSequence.empty())
+        CurrentSequence = name;
+
+    auto itr = Sequences.find(std::string(name));
+    if (itr != Sequences.end())
+        return itr->second;
+
+    Sequences.emplace(name, AnimationSequence());
+
+    return Sequences[std::string(name)];
+}
+
+void SpriteAnimationComponent::SetCurrentSequence(std::string_view sequenceName)
+{
+    CurrentSequence = sequenceName;
+    ResetSequence();
+}
+
+void SpriteAnimationComponent::ResetSequence()
+{
+    CurrentFrame = 0;
+    LastFrameTime = 0;
+}
+
+bool SpriteAnimationComponent::IsAnimating() const
+{
+    auto itr = Sequences.find(CurrentSequence);
+    if (itr == Sequences.end())
+        return false;
+
+    if (itr->second.Loop)
+        return true;
+
+    return CurrentFrame < itr->second.Frames.size();
 }

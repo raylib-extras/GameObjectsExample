@@ -71,7 +71,7 @@ class Spiner : public GameObjectBehavior
 public:
     DEFINE_BEHAVIOR(Spiner)
 
-    float Speed = 180;
+    float Speed = -90;
 
     void OnUpdate() override
     {
@@ -89,11 +89,13 @@ void SetupScene()
     auto* player = TestScene.AddObject();
     player->AddComponent<TransformComponent>()->SetPosition(Vector2{ 100, 100 });
     player->AddComponent<PlayerController>();
-    player->AddComponent<SpriteComponent>()->SetSprite(Wabbit);
+    auto* sprite = player->AddComponent<SpriteComponent>();
+    sprite->SetSprite(Wabbit);
+    sprite->SetScale(3);
 
     auto* logo = TestScene.AddObject();
     logo->AddComponent<TransformComponent>()->SetPosition(Vector2{ GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f });
-    auto* sprite = logo->AddComponent<SpriteComponent>();
+     sprite = logo->AddComponent<SpriteComponent>();
     sprite->SetSprite(Logo);
     sprite->SetScale(0.5f);
 
@@ -103,12 +105,29 @@ void SetupScene()
 
     auto* orbit = spinner->AddChild();
     orbit->AddComponent<TransformComponent>()->SetPosition(Vector2{ 0, 200 });
-    orbit->AddComponent<SpriteComponent>()->SetSprite(Wabbit);
+    sprite = orbit->AddComponent<SpriteComponent>();
+    sprite->SetSprite(Sprite);
+   // sprite->SetScale(0.5f);
+
+    auto* animator = orbit->AddComponent<SpriteAnimationComponent>();
+    auto& normalSequence = animator->AddSequence("normal");
+    normalSequence.FromSpriteSheet(Sprite, Sprite.width / 6, Sprite.height);
+    normalSequence.Loop = true;
+    normalSequence.FPS = 7;
+
+    auto& reverseSequence = animator->AddSequence("reverse");
+    reverseSequence.FromSpriteSheet(Sprite, Sprite.width / 6, Sprite.height);
+    reverseSequence.Loop = true;
+    reverseSequence.FPS = normalSequence.FPS;
+    reverseSequence.FlipFrames(true, false);
+
+    animator->SetCurrentSequence("normal");
 }
 
 void LoadResources()
 {
     Wabbit = LoadTexture("resources/wabbit_alpha.png");
+    SetTextureFilter(Wabbit, TEXTURE_FILTER_POINT);
     Logo = LoadTexture("resources/raylib_logo.png");
     Sprite = LoadTexture("resources/scarfy.png");
 }

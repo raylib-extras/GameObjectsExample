@@ -22,6 +22,10 @@
 #include "component.h"
 #include "raylib.h"
 
+#include <vector>
+#include <string>
+#include <unordered_map>
+
 class TransformComponent : public Component
 {
 private:
@@ -63,4 +67,37 @@ public:
 
     void SetScale(float scale);
     float GetScale() const;
+};
+
+struct AnimationSequence
+{
+    std::vector<Rectangle> Frames;
+    float FPS = 15;
+    bool Loop = true;
+
+    void FlipFrames(bool flipX, bool flipY);
+
+    void FromSpriteSheet(Texture2D& texture, int frameWidth, int frameHeight);
+};
+
+class SpriteAnimationComponent : public Component
+{
+private:
+    std::unordered_map<std::string, AnimationSequence> Sequences;
+    std::string CurrentSequence;
+
+    int CurrentFrame = 0;
+    float LastFrameTime = 0;
+
+public: 
+    DEFINE_COMPONENT(SpriteAnimationComponent)
+
+    void OnUpdate() override;
+
+    AnimationSequence& AddSequence(std::string_view name);
+
+    void SetCurrentSequence(std::string_view sequenceName);
+    void ResetSequence();
+
+    bool IsAnimating() const;
 };
