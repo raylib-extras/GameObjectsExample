@@ -23,6 +23,7 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
+#include <vector>
 
 class GameObject
 {

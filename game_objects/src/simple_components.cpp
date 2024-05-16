@@ -184,7 +184,7 @@ void SpriteAnimationComponent::OnUpdate()
             if (sequence.Loop)
                 CurrentFrame = 0;
             else
-                CurrentFrame = sequence.Frames.size();
+                CurrentFrame = int(sequence.Frames.size());
         }
     }
 

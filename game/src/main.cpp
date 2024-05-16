@@ -21,14 +21,13 @@ Use this as a starting point or replace it with your code.
 --  3. This notice may not be removed or altered from any source distribution.
 
 */
-
-#include "raylib.h"
-#include "raymath.h"
-
 #include "game_object.h"
 #include "simple_components.h"
 #include "behavior.h"
 #include "scene.h"
+
+#include "raylib.h"
+#include "raymath.h"
 
 Scene TestScene;
 
